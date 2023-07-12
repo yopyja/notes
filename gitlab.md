@@ -156,6 +156,11 @@ sudo docker exec -it gitlab apt update && apt install gitlab-ee
 ```
 
 ```sh
+# Copy backup from WSL to Host
+sudo cp date_vers_gitlab_backup.tar /mnt/c/users/pj/Desktop/date_vers_gitlab_backup.tar
+```
+
+```sh
 # Check Version
 sudo docker exec -it gitlab gitlab-rake gitlab:env:info
 ```
