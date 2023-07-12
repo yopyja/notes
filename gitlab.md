@@ -164,3 +164,51 @@ sudo cp date_vers_gitlab_backup.tar /mnt/c/users/pj/Desktop/date_vers_gitlab_bac
 # Check Version
 sudo docker exec -it gitlab gitlab-rake gitlab:env:info
 ```
+
+## Synology Mnt
+
+```sh
+# Install NFS
+sudo apt-get update
+sudo apt-get install nfs-common
+```
+
+1. Check if the NFS service is running on the Synology NAS:
+
+Log in to the Synology DSM (DiskStation Manager) and navigate to Control Panel > File Services > NFS Service and ensure that "Enable NFS" is checked.
+
+2. Set up NFS permissions for your shared folder:
+
+In the DSM, navigate to Control Panel > Shared Folder. Select the 'gitlabdb' shared folder and click on 'Edit'. In the 'NFS Permissions' tab, add a new entry. In the 'Hostname or IP' field, you can enter the IP address of your Docker host, or you can use '*' to allow any client to connect. Ensure 'Privilege' is set to 'Read/Write', 'Root Squash' is set to 'No', and 'Enable asynchronous' is checked. This will give your Docker host permission to read and write files in the 'gitlabdb' shared folder.
+
+3. Check your network connection:
+
+Make sure your Docker host and Synology NAS are on the same network and can communicate with each other. You can use the ping command from your Docker host to check if it can reach the NAS.
+
+4. Check the NFS server's export list:
+
+This step is a bit more advanced and requires SSH access to your Synology NAS. You need to check if your NAS is actually exporting the 'gitlabdb' folder. SSH into your NAS and run the command showmount -e localhost. This will list the directories that your NFS server is exporting.
+
+```sh
+# Mount the NAS on your Docker Host machine
+sudo mkdir /mnt/nas
+sudo mount -t nfs -o rw,nosuid,soft,noatime,nolock,nfsvers=3 192.168.x.x:/volx/share /mnt/nas
+```
+
+```yaml
+version: '3'
+services:
+  gitlab:
+    image: gitlab/gitlab-ee:16.1.2-ee.0
+    hostname: '192.168.x.x' # Replace x.x with actual values
+    ports:
+      - '80:80'
+      - '443:443'
+      - '22:22'
+    volumes:
+      - '/mnt/nas/config:/etc/gitlab'
+      - '/mnt/nas/logs:/var/log/gitlab'
+      - '/mnt/nas/data:/var/opt/gitlab'
+    shm_size: '256m'
+    restart: always
+```
