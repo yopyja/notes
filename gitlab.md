@@ -70,7 +70,7 @@ sudo chmod -R 755 /nfs/syn
 sudo usermod -aG docker username
 sudo chown -R :docker /nfs/syn
 sudo chmod -R g+rwx /nfs/syn
-sudo mount -t nfs 192.168.0.138:/volume1/gitlabhome /nfs/syn
+sudo mount -t nfs <nas-ip-address>:/volume1/gitlabhome /nfs/syn
 ```
 
 ---
@@ -108,7 +108,7 @@ services:
   gitlab:
     image: 'gitlab/gitlab-ee:16.1.2-ee.0'
     restart: always
-    hostname: '192.168.0.130'
+    hostname: 'serveripgoeshere'
     ports:
       - '80:80'
       - '443:443'
@@ -127,35 +127,35 @@ sudo docker exec -it <container-id> grep 'Password:' /etc/gitlab/initial_root_pa
 
 ```sh
 # Inject Backup into Container
-docker cp 07122023_16.1.2ee_gitlab_backup.tar <container-id>:/var/opt/gitlab/backups/7-12-23_gitlab_backup.tar
+docker cp YYYY_MM_DD_VERSION_gitlab_backup.tar <container-id>:/var/opt/gitlab/backups/YYYY_MM_DD_VERSION_gitlab_backup.tar
 ```
 
 ```sh
 # Issue GitLab Restore
-docker exec -it <container-id> gitlab-backup restore BACKUP=7-12-23
+docker exec -it <container-id> gitlab-backup restore BACKUP=YYYY_MM_DD_VERSION
 ```
 
 ---
 
 ```sh
 # Minor Upgrade Container 
-sudo docker exec -it gitlab apt
-sudo docker exec -it gitlab apt install gitlab-ee=15.11.11-ee.0
-sudo docker exec -it gitlab gitlab-ctl reconfigure
-sudo docker exec -it gitlab gitlab-ctl restart
+sudo docker exec -it <container-id> apt
+sudo docker exec -it <container-id> apt install gitlab-ee=15.11.11-ee.0
+sudo docker exec -it <container-id> gitlab-ctl reconfigure
+sudo docker exec -it <container-id> gitlab-ctl restart
 ```
 
 ---
 
 ```sh
 # Major Upgrade Container (must be latest minor version)
-sudo docker exec -it gitlab apt update && apt install gitlab-ee
+sudo docker exec -it <container-id> apt update && apt install gitlab-ee
 ```
 
 ---
 
 ```sh
 # Check Version
-sudo docker exec -it gitlab gitlab-rake gitlab:env:info
+sudo docker exec -it <container-id> gitlab-rake gitlab:env:info
 ```
 
