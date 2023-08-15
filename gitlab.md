@@ -137,6 +137,18 @@ docker exec -it <container-id> gitlab-backup restore BACKUP=YYYY_MM_DD_VERSION
 
 ---
 
+## GitLab Backup Creation & Export
+
+```sh
+# Backup Create
+sudo docker exec -it <container-id> gitlab-backup create
+```
+
+```sh
+# Backup Export
+sudo docker cp <container-id>:/var/opt/gitlab/backups/LATEST_VERS-ee_gitlab_backup.tar YYYYMMDD_gitlab_backup.tar
+```
+
 ```sh
 # Minor Upgrade Container 
 sudo docker exec -it <container-id> apt
